@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Merry Christmas</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 html2canvas -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    
+    <style>
+        /* --- Apple Style 全局设置 --- */
+        :root {
+            --primary-pink: #FFD1DC;
+            --accent-red: #E0245E;
+            --text-main: #1D1D1F;
+            --text-sub: #86868B;
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.5);
+        }
+
+        body {
+            /* Apple 系统字体栈 */
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #fffafc;
+            background-image:
+                radial-gradient(60% 70% at 20% 20%, rgba(255, 214, 228, 0.35), transparent 55%),
+                radial-gradient(45% 60% at 80% 10%, rgba(248, 207, 221, 0.35), transparent 50%),
+                linear-gradient(135deg, #ffffff 0%, #ffeef5 50%, #f6dfe8 100%);
+            background-size: 160% 160%, 160% 160%, 100% 100%;
+            background-attachment: fixed;
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* 磨砂玻璃容器 */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+        }
+
+        /* iOS 风格按钮 */
+        .btn-apple {
+            background: #000000; /* Apple 常用高对比度黑色按钮 */
+            color: #fff;
+            border-radius: 999px; /* Pill shape */
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .btn-apple:active {
+            transform: scale(0.96);
+            opacity: 0.9;
+        }
+
+        /* 贺卡专用字体 - 衬线体增加仪式感 */
+        .font-serif-card {
+            font-family: "New York", "Times New Roman", serif;
+        }
+
+        /* 输入框样式 */
+        .input-apple {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .input-apple:focus {
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(224, 36, 94, 0.1); /* 淡淡的粉红光晕 */
+            outline: none;
+        }
+
+        /* 动画定义 */
+        .fade-up {
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 雪花画布 */
+        #snow-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* 贺卡生成区域样式细节 */
+        .card-decoration {
+            position: absolute;
+            pointer-events: none;
+        }
+        
+        /* Loading 动画 */
+        .apple-loader {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #E5E5EA;
+            border-top-color: #8E8E93;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* 隐藏滚动条 */
+        ::-webkit-scrollbar { display: none; }
+
+        /* 贴纸浮动动画 */
+        .card-sticker {
+            position: absolute;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.08));
+            animation: gentleFloat 6s ease-in-out infinite;
+        }
+        @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        /* 卡片玻璃感包裹 */
+        .card-shell {
+            background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.9), rgba(255,255,255,0.7)),
+                        linear-gradient(160deg, rgba(255,255,255,0.85), rgba(255,245,248,0.7));
+            box-shadow: 0 25px 50px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.7);
+        }
+
+        /* 文本徽章 */
+        .emoji-chip {
+            background: rgba(255,255,255,0.7);
+            border: 1px solid rgba(255,255,255,0.9);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 10px 30px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 背景音乐 -->
+    <audio id="bg-music" loop>
+        <source src="https://actions.google.com/sounds/v1/holidays/jingle_bells_orchestra.ogg" type="audio/ogg">
+    </audio>
+
+    <!-- 音乐开关 (极简圆点风格) -->
+    <button id="music-toggle" class="fixed top-6 right-6 z-50 w-10 h-10 rounded-full bg-white/50 backdrop-blur-md flex items-center justify-center shadow-sm transition hover:bg-white/80 text-sm">
+        🎵
+    </button>
+
+    <!-- 雪花层 -->
+    <canvas id="snow-canvas"></canvas>
+
+    <!-- 主容器 -->
+    <div id="app-container" class="relative z-10 w-full h-full flex flex-col justify-center items-center px-6">
+
+        <!-- 1. 引导页 -->
+        <div id="page-landing" class="flex flex-col items-center justify-center text-center space-y-8 fade-up w-full max-w-sm">
+            <!-- 装饰图标 -->
+            <div class="text-6xl mb-4 animate-bounce">🎁</div>
+            
+            <div>
+                <h1 class="text-4xl font-bold tracking-tight text-gray-900 mb-2 font-serif-card">Merry Christmas</h1>
+                <p class="text-gray-500 text-sm tracking-wide uppercase">A Special Gift For You</p>
+            </div>
+
+            <!-- 极简卡片视觉占位 -->
+            <div class="w-48 h-64 bg-white/40 rounded-2xl shadow-xl transform rotate-3 border border-white/60 backdrop-blur-sm mb-6 flex items-center justify-center">
+                <span class="text-4xl opacity-50">🎄</span>
+            </div>
+
+            <button onclick="goToInput()" class="btn-apple w-full py-4 text-lg shadow-lg hover:shadow-xl">
+                Open Gift
+            </button>
+        </div>
+
+        <!-- 2. 输入页 -->
+        <div id="page-input" class="hidden w-full max-w-sm fade-up">
+            <div class="glass-panel p-8 rounded-3xl text-center shadow-2xl">
+                <div class="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl">
+                    🎅
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">Who is this for?</h2>
+                <p class="text-gray-500 mb-8 text-sm">Enter your nickname to customize.</p>
+
+                <input type="text" id="nickname-input" placeholder="Nickname" 
+                       class="input-apple w-full px-5 py-4 rounded-xl text-center text-lg font-medium text-gray-800 placeholder-gray-400 mb-6">
+
+                <button onclick="generateCard()" class="btn-apple w-full py-3.5 text-base font-medium bg-gradient-to-r from-rose-500 to-pink-600 border-none">
+                    Create Card
+                </button>
+            </div>
+        </div>
+
+        <!-- 3. Loading -->
+        <div id="page-loading" class="hidden flex flex-col items-center justify-center fade-up">
+            <div class="apple-loader mb-4"></div>
+            <p class="text-gray-500 text-sm font-medium tracking-wide">Wrapping your gift...</p>
+        </div>
+
+        <!-- 4. 结果页 (贺卡展示) -->
+        <div id="page-result" class="hidden flex flex-col items-center w-full max-w-md fade-up pb-10">
+            <div class="mb-4 text-center">
+                <h2 class="text-lg font-semibold text-gray-800">Your Exclusive Card</h2>
+                <p class="text-xs text-gray-500 mt-1">Long press to save image</p>
+            </div>
+
+            <!-- 贺卡渲染区 (设计重点) -->
+            <div id="card-render-area" class="relative w-[340px] h-[520px] rounded-2xl overflow-hidden flex flex-col text-center border-[12px] border-white box-content card-shell">
+                
+                <!-- 浮动贴纸和插图 -->
+                <div class="card-sticker top-6 left-6 text-3xl">✨</div>
+                <div class="card-sticker top-10 right-6 text-2xl" style="animation-delay: 1s;">💝</div>
+                <div class="card-sticker bottom-24 left-7 text-3xl" style="animation-delay: 1.8s;">🧸</div>
+                <div class="card-sticker bottom-32 right-8 text-2xl" style="animation-delay: 2.4s;">🍪</div>
+
+                <!-- 背景渐变装饰 -->
+                <div class="absolute inset-0 bg-gradient-to-b from-white/70 via-[#fff5f8]/90 to-[#ffe7f1]/80"></div>
+                <div class="absolute inset-x-10 top-8 h-12 rounded-full bg-white/60 backdrop-blur-xl border border-white/80 shadow-lg flex items-center justify-center gap-3 text-sm text-gray-700 z-10 emoji-chip">
+                    <span>🎀</span>
+                    <span class="tracking-[0.28em] uppercase text-[10px] text-gray-500">Holiday Edition</span>
+                    <span>⭐️</span>
+                </div>
+
+                <!-- 内容区 -->
+                <div class="flex-grow flex flex-col items-center pt-24 px-7 relative z-20">
+                    <!-- 标题 -->
+                    <h1 class="font-serif-card text-4xl text-[#c83d65] italic mb-1 drop-shadow-sm" style="font-family: 'Great Vibes', serif;">Merry Christmas ❄️</h1>
+                    <p class="text-xs text-gray-500 uppercase tracking-[0.25em] mb-4">wrapped with love</p>
+
+                    <!-- 氛围 emoji -->
+                    <div class="flex items-center gap-2 text-xl mb-5">
+                        <span>🎄</span><span>🎁</span><span>🧣</span><span>☃️</span><span>🧸</span>
+                    </div>
+
+                    <div class="w-full bg-white/75 rounded-2xl px-4 py-5 shadow-inner border border-white/70 backdrop-blur">
+                        <div class="text-[11px] text-gray-400 uppercase tracking-[0.35em] mb-1">Dear</div>
+                        <h2 id="card-name" class="text-2xl font-bold text-gray-900 mb-4 font-serif-card">User Name</h2>
+
+                        <p id="card-wish" class="text-sm text-gray-700 leading-7 font-serif-card italic px-1">
+                            May your days be merry and bright, and may all your Christmases be white.
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- 底部落款：放在插画上方，避免遮挡 -->
+                <div class="mt-6 text-xs text-[#1a1a1a] font-medium tracking-wide text-center leading-5 whitespace-nowrap">
+                    Design by 221 / 2025 Christmas
+                </div>
+
+                <!-- 底部场景插画 (SVG + Emoji) -->
+                <div class="relative w-full h-40 mt-auto bg-gradient-to-t from-white via-white/80 to-transparent z-10">
+                    <img src="christmas.svg" alt="Christmas line art" class="absolute bottom-6 left-1/2 -translate-x-1/2 w-48 opacity-70 drop-shadow-md">
+
+                    <div class="absolute bottom-4 left-6 text-3xl opacity-90">🎁</div>
+                    <div class="absolute bottom-6 right-6 text-3xl opacity-90">🦌</div>
+                    <div class="absolute bottom-10 right-14 text-2xl opacity-80">🪄</div>
+                </div>
+                
+            </div>
+
+            <!-- 图片生成容器 -->
+            <div id="final-image-container" class="mt-6 shadow-2xl rounded-xl overflow-hidden border-4 border-white transform hover:scale-[1.02] transition duration-500"></div>
+
+            <button onclick="resetApp()" class="mt-8 text-gray-500 text-sm font-medium hover:text-gray-900 transition flex items-center">
+                <span class="mr-2">↺</span> Create another one
+            </button>
+        </div>
+
+    </div>
+
+    <!-- 字体引入 (补充更优雅的英文字体) -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=New+York&display=swap" rel="stylesheet">
+
+    <script>
+        // --- 祝福语库 (中英混合，更洋气) ---
+        const wishes = [
+            "圣诞快乐！\nMay your Christmas be sweet and bright.",
+            "平安喜乐 万事胜意\nWishing you peace, joy, and happiness.",
+            "这是我给你的专属浪漫，圣诞快乐！\nSending you a special gift of love.",
+            "圣诞快乐！\nKeep loving and keep going. \n Merry Christmas!",
+            "祝你遇见好天气\n走向更广阔的未来\n遇到不同的风 被雕刻 被记住",
+            "希望这个冬天\n爱与好运同在",
+            "希望圣诞和新年能带给你\n无尽的幸福和快乐 \n (*˘︶˘*).。.:*♡",
+            "愿温暖与你同在\n🎄･:*+.(( °ω° ))/.:+☆彡",
+            "祝你天天开心！\nThe best people in life are free."
+        ];
+
+        // --- 核心逻辑 ---
+
+        const bgMusic = document.getElementById('bg-music');
+        const musicToggle = document.getElementById('music-toggle');
+        let isMusicPlaying = false;
+
+        // 音乐控制
+        musicToggle.addEventListener('click', () => {
+            if (isMusicPlaying) {
+                bgMusic.pause();
+                musicToggle.style.opacity = '0.5';
+            } else {
+                bgMusic.play();
+                musicToggle.style.opacity = '1';
+            }
+            isMusicPlaying = !isMusicPlaying;
+        });
+
+        function switchPage(hideId, showId) {
+            const hideEl = document.getElementById(hideId);
+            const showEl = document.getElementById(showId);
+            
+            hideEl.style.display = 'none';
+            showEl.classList.remove('hidden');
+            showEl.style.display = 'flex'; // 重新显现时保持 flex 布局
+
+            // 自动播放音乐尝试
+            if (!isMusicPlaying && bgMusic.paused) {
+                bgMusic.play().then(() => {
+                    isMusicPlaying = true;
+                    musicToggle.style.opacity = '1';
+                }).catch(() => {}); // 忽略自动播放限制错误
+            }
+        }
+
+        function goToInput() {
+            switchPage('page-landing', 'page-input');
+        }
+
+        function generateCard() {
+            const nameInput = document.getElementById('nickname-input');
+            const name = nameInput.value.trim();
+
+            if (!name) {
+                // 震动反馈 UI
+                nameInput.classList.add('ring-2', 'ring-red-400');
+                setTimeout(() => nameInput.classList.remove('ring-2', 'ring-red-400'), 500);
+                return;
+            }
+
+            switchPage('page-input', 'page-loading');
+
+            // 设置内容
+            const randomWish = wishes[Math.floor(Math.random() * wishes.length)];
+            document.getElementById('card-name').innerText = name;
+            document.getElementById('card-wish').innerText = randomWish;
+
+            // 延迟模拟生成
+            setTimeout(() => {
+                createImage();
+            }, 1200);
+        }
+
+        function createImage() {
+            const dom = document.getElementById('card-render-area');
+            const resultPage = document.getElementById('page-result');
+            const loadingPage = document.getElementById('page-loading');
+
+            // 必须先显示 DOM 才能截图
+            loadingPage.style.display = 'none';
+            resultPage.classList.remove('hidden');
+            resultPage.style.display = 'flex';
+            
+            // 临时确保渲染区可见
+            dom.style.display = 'flex';
+
+            html2canvas(dom, {
+                scale: 3, // 高清渲染
+                backgroundColor: null,
+                useCORS: true
+            }).then(canvas => {
+                const imgUrl = canvas.toDataURL("image/png");
+                const img = document.createElement('img');
+                img.src = imgUrl;
+                img.style.width = '100%';
+                img.style.display = 'block';
+
+                const container = document.getElementById('final-image-container');
+                container.innerHTML = '';
+                container.appendChild(img);
+
+                // 隐藏原始 DOM
+                dom.style.display = 'none';
+            });
+        }
+
+        function resetApp() {
+            document.getElementById('nickname-input').value = '';
+            document.getElementById('final-image-container').innerHTML = '';
+            switchPage('page-result', 'page-input');
+        }
+
+        // --- 极简雪花特效 ---
+        const canvas = document.getElementById('snow-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * -height;
+                this.vy = 1 + Math.random() * 2;
+                this.vx = 0.5 - Math.random();
+                this.r = 1 + Math.random() * 2;
+                this.o = 0.5 + Math.random() * 0.5;
+            }
+            update() {
+                this.y += this.vy;
+                this.x += this.vx;
+                if (this.y > height) this.reset();
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.o})`; // 纯白雪花，配合粉色背景
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 60; i++) particles.push(new Particle());
+
+        function loop() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(loop);
+        }
+        loop();
+
+    </script>
+</body>
+</html>

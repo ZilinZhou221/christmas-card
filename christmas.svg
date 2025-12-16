@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" fill="none">
+  <!-- Minimal Christmas line art: Santa + Sleigh + Reindeer (transparent background) -->
+  <defs>
+    <style>
+      .line { stroke: #111; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+      .thin { stroke-width: 4; }
+    </style>
+  </defs>
+
+  <!-- Snow dots (subtle) -->
+  <g opacity="0.35">
+    <circle cx="90" cy="70" r="3" fill="#111"></circle>
+    <circle cx="180" cy="40" r="2.5" fill="#111"></circle>
+    <circle cx="260" cy="85" r="2" fill="#111"></circle>
+    <circle cx="360" cy="55" r="3" fill="#111"></circle>
+    <circle cx="520" cy="75" r="2.5" fill="#111"></circle>
+    <circle cx="680" cy="45" r="2" fill="#111"></circle>
+    <circle cx="830" cy="78" r="3" fill="#111"></circle>
+    <circle cx="980" cy="52" r="2.5" fill="#111"></circle>
+    <circle cx="1100" cy="82" r="2" fill="#111"></circle>
+  </g>
+
+  <!-- Ground baseline -->
+  <path class="line thin" d="M40 330 C160 350, 280 350, 400 330 S640 310, 760 330 S1000 350, 1160 330"></path>
+
+  <!-- Rope from sleigh to reindeer -->
+  <path class="line thin" d="M585 250 C690 235, 780 220, 860 225"></path>
+
+  <!-- REINDEER (right) -->
+  <g transform="translate(820,145)">
+    <!-- body -->
+    <ellipse class="line" cx="130" cy="135" rx="95" ry="55"></ellipse>
+    <!-- neck -->
+    <path class="line" d="M70 120 C45 95, 40 70, 55 55"></path>
+    <!-- head -->
+    <ellipse class="line" cx="45" cy="45" rx="38" ry="30"></ellipse>
+    <!-- nose -->
+    <circle cx="15" cy="55" r="6" fill="#111"></circle>
+    <!-- ear -->
+    <path class="line thin" d="M58 25 L78 12 L72 35"></path>
+    <!-- antlers -->
+    <path class="line" d="M45 15 C35 -10, 20 -20, 10 -30"></path>
+    <path class="line" d="M45 15 C60 -10, 80 -18, 95 -30"></path>
+    <path class="line thin" d="M22 -18 L12 -5"></path>
+    <path class="line thin" d="M30 -25 L22 -38"></path>
+    <path class="line thin" d="M70 -18 L82 -6"></path>
+    <path class="line thin" d="M86 -26 L98 -38"></path>
+    <!-- legs -->
+    <path class="line" d="M95 175 L85 240"></path>
+    <path class="line" d="M145 180 L135 245"></path>
+    <path class="line" d="M190 170 L205 242"></path>
+    <path class="line" d="M235 160 L250 238"></path>
+    <!-- hooves -->
+    <path class="line thin" d="M78 245 L98 245"></path>
+    <path class="line thin" d="M128 250 L148 250"></path>
+    <path class="line thin" d="M197 247 L217 247"></path>
+    <path class="line thin" d="M242 243 L262 243"></path>
+    <!-- tail -->
+    <path class="line thin" d="M225 135 C255 145, 268 155, 280 175"></path>
+    <!-- harness strap -->
+    <path class="line thin" d="M65 135 C110 120, 165 120, 215 135"></path>
+  </g>
+
+  <!-- SLEIGH (center) -->
+  <g transform="translate(430,150)">
+    <!-- runners -->
+    <path class="line" d="M40 190 C90 235, 190 245, 300 215"></path>
+    <path class="line thin" d="M50 205 C120 250, 215 255, 305 228"></path>
+    <!-- base -->
+    <path class="line" d="M55 165 L300 165"></path>
+    <!-- front curl -->
+    <path class="line" d="M300 165 C330 160, 342 130, 325 110"></path>
+    <path class="line thin" d="M325 110 C310 95, 292 92, 280 96"></path>
+    <!-- seat / body -->
+    <path class="line" d="M80 165 C70 120, 95 80, 150 75"></path>
+    <path class="line" d="M150 75 C215 70, 255 95, 260 165"></path>
+    <!-- back -->
+    <path class="line" d="M80 165 C70 190, 85 210, 110 220"></path>
+    <!-- gift sack hint -->
+    <path class="line thin" d="M170 85 C150 95, 140 120, 155 140 C170 160, 205 160, 220 140 C235 120, 220 95, 200 85"></path>
+    <path class="line thin" d="M178 78 C190 90, 206 90, 216 78"></path>
+  </g>
+
+  <!-- SANTA (sitting in sleigh) -->
+  <g transform="translate(500,120)">
+    <!-- head -->
+    <circle class="line" cx="120" cy="85" r="32"></circle>
+    <!-- beard -->
+    <path class="line" d="M95 95 C105 135, 135 135, 145 95"></path>
+    <!-- nose -->
+    <path class="line thin" d="M122 85 L132 90"></path>
+    <!-- eye -->
+    <path class="line thin" d="M110 78 L114 78"></path>
+    <!-- hat -->
+    <path class="line" d="M95 70 C105 40, 140 35, 160 55"></path>
+    <path class="line" d="M160 55 C145 45, 132 52, 120 65"></path>
+    <circle cx="165" cy="58" r="7" fill="#111"></circle>
+    <!-- body -->
+    <path class="line" d="M90 135 C95 165, 125 185, 160 175"></path>
+    <!-- arm holding reins -->
+    <path class="line" d="M140 145 C170 145, 195 140, 225 135"></path>
+    <!-- hand -->
+    <path class="line thin" d="M224 135 L236 128"></path>
+    <!-- boot hint -->
+    <path class="line thin" d="M118 185 C120 205, 145 205, 150 188"></path>
+  </g>
+
+  <!-- Extra leading line to suggest motion -->
+  <path class="line thin" opacity="0.5" d="M690 120 C740 95, 805 90, 880 105"></path>
+
+</svg>
